@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'project_management.issue.apps.IssueConfig',
     'project_management.comment.apps.CommentConfig',
 
+    'project_management.api.v1.apps.V1Config',
+
 ]
 
 
@@ -101,7 +103,7 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'user.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
