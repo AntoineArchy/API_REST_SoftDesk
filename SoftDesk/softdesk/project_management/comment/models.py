@@ -10,7 +10,9 @@ from user.models import User
 # Create your models here.
 class Comment(models.Model):
     author = models.ForeignKey(to=User,
-                               on_delete=models.CASCADE)
+                               on_delete=models.CASCADE,
+                               null=True,
+                               blank=True)
     description = models.TextField(max_length=800)
 
     issue = models.ForeignKey(to=Issue,
