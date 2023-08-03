@@ -10,12 +10,17 @@ from user.models import User
 # Create your models here.
 class Issue(models.Model):
     author = models.ForeignKey(to=User,
-                               on_delete=models.CASCADE)
+                               on_delete=models.CASCADE,
+                               related_name='issue_author',
+                               blank=True,
+                               null=True
+                               )
     description = models.TextField(max_length=800)
 
     name = models.CharField(max_length=128)
     project = models.ForeignKey(to=Project,
-                                on_delete=models.CASCADE)
+                                on_delete=models.CASCADE,
+                                related_name='project')
     priority = ''
     tag = ''
     statut = ''
