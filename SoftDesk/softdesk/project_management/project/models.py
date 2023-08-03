@@ -10,13 +10,18 @@ from user.models import User
 class Project(models.Model):
     author = models.ForeignKey(to=User,
                                on_delete=models.CASCADE,
-                               related_name='Author')
+                               related_name='project_author',
+                               blank=True,
+                               null=True)
     description = models.TextField(max_length=800)
 
     name = models.CharField(max_length=128)
     type = ''
     contributors = models.ManyToManyField(to=User,
-                                          related_name='Contributor')
+                                          related_name='project_contributor',
+                                          blank=True,
+                                          null=True)
+
 
     creation_date = models.DateTimeField(default=timezone.now)
     last_update = models.DateTimeField(default=timezone.now)
