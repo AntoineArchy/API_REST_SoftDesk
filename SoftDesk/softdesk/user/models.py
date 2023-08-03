@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models import CheckConstraint, Q
 
@@ -14,8 +15,17 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, username, password, **kwargs):
+        user = self.model(username=username, **kwargs)
+        user.set_password(password)
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
-class User(AbstractBaseUser):
+
+class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     birthday = models.DateTimeField(
         blank=False, null=False
@@ -30,8 +40,13 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['username', 'birthday']
+    REQUIRED_FIELDS = ['birthday']
 
     class Meta:
         constraints = [

@@ -8,6 +8,7 @@ MIN_USER_AGE = datetime.timedelta(days=5475)
 
 
 class UserSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="api:user-detail")
     class Meta:
         model = User
         fields = ('url', 'username', 'password', 'birthday', 'can_be_contacted', 'can_data_be_shared')
