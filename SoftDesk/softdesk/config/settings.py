@@ -43,6 +43,10 @@ INSTALLED_APPS = [
 
     'user.apps.UserConfig',
 
+    'project_management.project.apps.ProjectConfig',
+    'project_management.issue.apps.IssueConfig',
+    'project_management.comment.apps.CommentConfig',
+
 ]
 
 
