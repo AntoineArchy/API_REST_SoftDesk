@@ -1,5 +1,6 @@
 import datetime
 
+import uuid
 from django.db import models
 from django.utils import timezone
 
@@ -17,7 +18,7 @@ class Comment(models.Model):
 
     parent_issue = models.ForeignKey(to=Issue,
                                      on_delete=models.CASCADE)
-    uuid = ''
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     creation_date = models.DateTimeField(default=timezone.now)
     last_update = models.DateTimeField(default=timezone.now)
