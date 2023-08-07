@@ -26,6 +26,4 @@ from user.api import api_urls as user_api_url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(project_management_urls)),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     ]
