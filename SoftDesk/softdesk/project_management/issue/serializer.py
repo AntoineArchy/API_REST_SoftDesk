@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from user.models import User
 from .models import Issue
 from project_management.project.serializer import ProjectSerializer
 from ..project.models import Project
@@ -9,11 +10,12 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
     parent_project = serializers.HyperlinkedRelatedField(view_name='api:project-detail', read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail")
+    assignee = serializers.HyperlinkedRelatedField(view_name="api:user-detail", queryset=User.objects.all(), allow_null=True)
 
     class Meta:
         model = Issue
         fields = ['url', 'author', 'description', 'name', 'parent_project',
-                  'priority', 'tag', 'statut']
+                  'priority', 'issue_type', 'statut', 'assignee']
 
     def validate(self, attrs):
         request = self.context.get('request')
