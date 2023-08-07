@@ -36,7 +36,6 @@ urlpatterns = [
     path('', include(issue_router.urls), name='issue'),
     path('', include(comment_router.urls), name='comment'),
 
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 

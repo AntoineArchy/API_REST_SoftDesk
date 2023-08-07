@@ -24,6 +24,7 @@ from user.api import api_urls as user_api_url
 # softdesk_api_routers = routers.DefaultRouter()
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include(project_management_urls)),
-    ]
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+]
