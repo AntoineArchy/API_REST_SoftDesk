@@ -15,9 +15,13 @@ class Comment(models.Model):
                                blank=True)
     description = models.TextField(max_length=800)
 
-    issue = models.ForeignKey(to=Issue,
-                              on_delete=models.CASCADE)
+    parent_issue = models.ForeignKey(to=Issue,
+                                     on_delete=models.CASCADE)
     uuid = ''
 
     creation_date = models.DateTimeField(default=timezone.now)
     last_update = models.DateTimeField(default=timezone.now)
+
+    @property
+    def contributors(self):
+        return self.parent_issue.contributors

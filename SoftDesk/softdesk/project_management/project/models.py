@@ -19,8 +19,7 @@ class Project(models.Model):
     type = ''
     contributors = models.ManyToManyField(to=User,
                                           related_name='project_contributor',
-                                          blank=True,
-                                          null=True)
+                                          blank=True)
 
 
     creation_date = models.DateTimeField(default=timezone.now)
