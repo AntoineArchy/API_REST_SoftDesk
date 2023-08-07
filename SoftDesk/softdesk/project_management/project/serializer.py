@@ -13,7 +13,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['url', 'author', 'description', 'contributors', 'name']
+        fields = ['url', 'author', 'description', 'contributors', 'name', 'type']
 
 
     def validate(self, attrs):
