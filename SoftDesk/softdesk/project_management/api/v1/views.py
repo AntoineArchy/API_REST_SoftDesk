@@ -52,8 +52,7 @@ class IssueViewSet(viewsets.ModelViewSet):
             return issue_models.Issue.objects.all().order_by('creation_date')
 
         return issue_models.Issue.objects.filter(
-            parent_project__pk__in=project_models.Project.objects.filter(
-                contributors=user).values('pk')
+            parent_project__contributors=user
         ).order_by("parent_project_id", 'last_update')
 
     def get_permissions(self):
