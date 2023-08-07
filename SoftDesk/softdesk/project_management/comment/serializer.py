@@ -6,42 +6,34 @@ from ..issue.models import Issue
 
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
-    # issue = serializers.HyperlinkedIdentityField(view_name='api:issue')
+    parent_issue = serializers.HyperlinkedRelatedField(view_name='api:issue-detail', read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
-    # url = serializers.HyperlinkedIdentityField(view_name="api:comment-detail")
-    issue = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(view_name="api:comment-detail")
 
     class Meta:
         model = Comment
-        fields = ['id', 'author', 'description', 'issue']
+        fields = ['url', 'author', 'description', 'parent_issue']
         extra_kwargs = {}
 
     def get_issue(self, obj):
         request = self.context.get('request')
-        return request.build_absolute_uri() + 'issue'
+        return request.build_absolute_uri()
 
-    def create(self, validated_data):
-        """
-            create a new project with request_user as author
-            and add a contributor link with role author
-            between the project and the request_user
-        """
-        try:
-            request = self.context.get('request')
+    def validate(self, attrs):
+        request = self.context.get('request')
+        user = request.user
+        issue_id = request.data.get('issue_id', False)
+        instance = getattr(self, 'instance', None)
+
+        if instance is not None:
+            issue_id = instance.parent_issue.pk
+
+        if not issue_id:
             url = request.get_full_path()
             url_split = url.split('/')
-            print(url, url_split)
-            print([(index, elt) for elt, index in enumerate(url_split)])
-            # validated_data['project'] = Project.objects.get(pk=int(url_split[3]))
-            validated_data['issue'] = Issue.objects.get(pk=int(url_split[5]))
-
-            comment = Comment.objects.create(**validated_data)
-
-            request_user = self.context.get('request').user
-            comment.author = request_user
-            comment.save()
-
-            return comment
-
-        except KeyError:
-            raise serializers.ValidationError('Error in creating project')
+            if url_split[4] != 'issue':
+                raise serializers.ValidationError('If you\'r not creating from full url, please provide issue_id')
+            issue_id = url_split[5]
+        attrs['parent_issue'] = Issue.objects.get(pk=issue_id)
+        attrs['author'] = user
+        return attrs
