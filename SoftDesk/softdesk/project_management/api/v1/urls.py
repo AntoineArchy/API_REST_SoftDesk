@@ -4,7 +4,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import ProjectViewSet, IssueViewSet, CommentViewSet
 from user.api.api_views import UserViewSet
-
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+# urlpatterns = [
+#     # YOUR PATTERNS
+#
+#     # Optional UI:
+#     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+#     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+# ]
 app_name = 'api'
 
 project_router = routers.DefaultRouter()
@@ -36,8 +43,13 @@ urlpatterns = [
     path('', include(issue_router.urls), name='issue'),
     path('', include(comment_router.urls), name='comment'),
 
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='api:schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='api:schema'), name='redoc'),
+
+    path(r'token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(r'token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]
 
