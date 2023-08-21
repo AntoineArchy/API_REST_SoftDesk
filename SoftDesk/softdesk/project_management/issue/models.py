@@ -27,9 +27,7 @@ class Issue(models.Model):
 
     author = models.ForeignKey(to=User,
                                on_delete=models.CASCADE,
-                               related_name='issue_author',
-                               blank=True,
-                               null=True
+                               related_name='issue_author'
                                )
     description = models.TextField(max_length=800)
 
@@ -52,19 +50,22 @@ class Issue(models.Model):
     statut = models.CharField(
         max_length=3,
         choices=IssueStatut.choices,
-        default=IssueStatut.TO_DO,
+        default=IssueStatut.TO_DO
     )
 
     assignee = models.ForeignKey(to=User,
                                  on_delete=models.SET_NULL,
-                                 related_name='assigned_user',
+                                 related_name='assignee',
                                  null=True,
                                  blank=True)
 
     creation_date = models.DateTimeField(default=timezone.now)
     last_update = models.DateTimeField(default=timezone.now)
 
-
     @property
     def contributors(self):
         return self.parent_project.contributors
+
+    def set_assignation(self, assignee):
+        self.assignee = assignee
+        self.save()
