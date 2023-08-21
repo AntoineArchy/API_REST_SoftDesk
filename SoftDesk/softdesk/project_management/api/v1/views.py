@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -28,12 +28,20 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return project_models.Project.objects.filter(contributors=user)
 
     def get_permissions(self):
-        # print(self.kwargs)
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsAuthor]
         else:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsContributor]
         return [permission() for permission in permission_classes]
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def subscribe(self, request, pk):
+        project = project_models.Project.objects.get(pk=pk)
+        if request.user in project.contributors.all():
+            return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        project.add_contributors(request.user)
+        project.save()
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -61,6 +69,22 @@ class IssueViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsContributor]
         return [permission() for permission in permission_classes]
+
+    @action(detail=True, methods=['patch'], permission_classes=[pm_permissions.IsContributor])
+    def update_issue_info(self, request, *args, **kwargs):
+        issue = self.get_object()
+        data = request.data
+        serializer = issue_serializers.IssuSerializer(issue, context={'request': request}, data=data, partial=True)
+        if serializer.is_valid():
+            issue.priority = serializer.validated_data.get('priority', issue.priority)
+            issue.issue_type = serializer.validated_data.get('issue_type', issue.issue_type)
+            issue.statut = serializer.validated_data.get('statut', issue.statut)
+            issue.assignee = serializer.validated_data.get('assignee', issue.assignee)
+
+            issue.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
