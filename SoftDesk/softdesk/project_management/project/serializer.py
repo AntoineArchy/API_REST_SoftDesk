@@ -9,12 +9,12 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="api:project-detail")
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
     contributors = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True, many=True)
+
     # issue = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ['url', 'author', 'description', 'contributors', 'name', 'type']
-
+        fields = ['url', 'name', 'description', 'type', 'author', 'contributors']
 
     def validate(self, attrs):
         request = self.context.get('request')

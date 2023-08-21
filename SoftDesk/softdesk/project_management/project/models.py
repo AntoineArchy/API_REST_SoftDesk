@@ -14,10 +14,9 @@ class Project(models.Model):
         FRONT_END = 'FRT', lazy_text("Front-end")
         IOS = 'IOS', lazy_text("iOS")
         ANDROID = 'ADR', lazy_text("Android")
-        # UNDEFINED = 'UND', lazy_text("Undefined")
 
     author = models.ForeignKey(to=User,
-                               on_delete=models.CASCADE,
+                               on_delete=models.SET_NULL,
                                related_name='project_author',
                                blank=True,
                                null=True)
@@ -37,3 +36,8 @@ class Project(models.Model):
 
     creation_date = models.DateTimeField(default=timezone.now)
     last_update = models.DateTimeField(default=timezone.now)
+
+    def add_contributors(self, *contributors):
+        for contributor in contributors:
+            self.contributors.add(contributor)
+        self.save()
