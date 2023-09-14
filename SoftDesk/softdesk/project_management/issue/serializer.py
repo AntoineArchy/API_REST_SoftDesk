@@ -9,6 +9,15 @@ from ..project.models import Project
 
 
 class IssuSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Sérialiseur pour le modèle Issue.
+
+    Attributs:
+        parent_project (str): Hyperlien vers le projet parent de l'issue.
+        author (str): Hyperlien vers l'auteur de l'issue.
+        url (str): URL de l'API pour la ressource de l'issue.
+        assignee (str): Hyperlien vers l'utilisateur assigné à l'issue.
+    """
     parent_project = serializers.HyperlinkedRelatedField(view_name='api:project-detail', read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
     url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail")
@@ -20,6 +29,15 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
                   'priority', 'issue_type', 'statut', 'assignee']
 
     def validate(self, attrs):
+        """
+        Valide et met à jour les attributs de l'issue avec les informations de l'auteur et de l'assigné.
+
+        Args:
+            attrs (dict): Dictionnaire contenant les attributs de l'issue.
+
+        Returns:
+            dict: Dictionnaire mis à jour avec les informations de l'auteur et de l'assigné.
+        """
         request = self.context.get('request')
         if self.instance is None:
             parsed_url = parse_url(request.get_full_path())
@@ -42,6 +60,15 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
 
 
 def parse_url(url):
+    """
+    Analyse une URL pour extraire les identifiants des ressources.
+
+    Args:
+        url (str): URL à analyser.
+
+    Returns:
+        dict: Dictionnaire contenant les identifiants des ressources.
+    """
     parsed_url = dict()
     split_url = url.split('/')
     for url_idx, url_part in enumerate(split_url):

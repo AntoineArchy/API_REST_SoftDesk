@@ -17,17 +17,37 @@ import project_management.issue.serializer as issue_serializers
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    VueSet pour le modèle de projet.
+
+    Attributs:
+        queryset (QuerySet): Ensemble des objets Project à utiliser.
+        serializer_class: Classe de sérialiseur à utiliser pour le modèle Project.
+        permission_classes (list of classes): Classes de permission pour restreindre l'accès à la vue.
+    """
     queryset = project_models.Project.objects.all()
     serializer_class = project_serializers.ProjectSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
+        """
+        Récupère et renvoie l'ensemble des objets Project selon les permissions de l'utilisateur.
+
+        Returns:
+            QuerySet: Ensemble des objets Project.
+        """
         user = self.request.user
         if user.is_superuser or user.is_admin:
             return project_models.Project.objects.all().order_by('creation_date')
         return project_models.Project.objects.filter(contributors=user)
 
     def get_permissions(self):
+        """
+        Récupère et renvoie les classes de permission en fonction de l'action de la vue.
+
+        Returns:
+            list of classes: Classes de permission à appliquer.
+        """
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsAuthor]
         else:
@@ -36,6 +56,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def subscribe(self, request, pk):
+        """
+        Inscrit l'utilisateur actuel en tant que contributeur au projet spécifié.
+
+        Args:
+            request: L'objet de requête HTTP.
+            pk (int): Clé primaire du projet auquel l'utilisateur souhaite s'abonner.
+
+        Returns:
+            Response: Réponse HTTP indiquant le statut de l'inscription.
+        """
         project = project_models.Project.objects.get(pk=pk)
         if request.user in project.contributors.all():
             return Response(status=status.HTTP_208_ALREADY_REPORTED)
@@ -45,11 +75,25 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class IssueViewSet(viewsets.ModelViewSet):
+    """
+    VueSet pour le modèle Issue.
+
+    Attributs:
+        queryset (QuerySet): Ensemble des objets Issue à utiliser.
+        serializer_class: Classe de sérialiseur à utiliser pour le modèle Issue.
+        permission_classes (list of classes): Classes de permission pour restreindre l'accès à la vue.
+    """
     queryset = issue_models.Issue.objects.all()
     serializer_class = issue_serializers.IssuSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
+        """
+        Récupère et renvoie l'ensemble des objets Issue en fonction des permissions de l'utilisateur.
+
+        Returns:
+            QuerySet: Ensemble des objets Issue.
+        """
         user = self.request.user
         project_pk = self.kwargs.get('project_pk', False)
 
@@ -64,6 +108,12 @@ class IssueViewSet(viewsets.ModelViewSet):
         ).order_by("parent_project_id", 'last_update')
 
     def get_permissions(self):
+        """
+        Récupère et renvoie les classes de permission en fonction de l'action de la vue.
+
+        Returns:
+            list of classes: Classes de permission à appliquer.
+        """
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsAuthor]
         else:
@@ -72,6 +122,17 @@ class IssueViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'], permission_classes=[pm_permissions.IsContributor])
     def update_issue_info(self, request, *args, **kwargs):
+        """
+       Met à jour les informations de l'issue spécifiée.
+
+       Args:
+           request: L'objet de requête HTTP.
+           *args: Arguments positionnels.
+           **kwargs: Arguments nommés.
+
+       Returns:
+           Response: Réponse HTTP indiquant le statut de la mise à jour.
+       """
         issue = self.get_object()
         data = request.data
         serializer = issue_serializers.IssuSerializer(issue, context={'request': request}, data=data, partial=True)
@@ -88,11 +149,25 @@ class IssueViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """
+    VueSet pour le modèle Comment.
+
+    Attributs:
+        queryset (QuerySet): Ensemble des objets Comment à utiliser.
+        serializer_class: Classe de sérialiseur à utiliser pour le modèle Comment.
+        permission_classes (list of classes): Classes de permission pour restreindre l'accès à la vue.
+    """
     queryset = comment_models.Comment.objects.all()
     serializer_class = comment_serializers.CommentSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     def get_queryset(self):
+        """
+        Récupère et renvoie l'ensemble des objets Comment en fonction des permissions de l'utilisateur.
+
+        Returns:
+            QuerySet: Ensemble des objets Comment.
+        """
         user = self.request.user
         issue_pk = self.kwargs.get('issue_pk', False)
 
@@ -106,6 +181,12 @@ class CommentViewSet(viewsets.ModelViewSet):
             parent_project__contributors=user))
 
     def get_permissions(self):
+        """
+        Récupère et renvoie les classes de permission en fonction de l'action de la vue.
+
+        Returns:
+            list of classes: Classes de permission à appliquer.
+        """
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, pm_permissions.IsAuthor]
         else:

@@ -6,6 +6,14 @@ from ..issue.models import Issue
 
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Sérialiseur pour le modèle Comment.
+
+    Attributs:
+        parent_issue (str): Hyperlien vers l'issue parente du commentaire.
+        uuid (str): Hyperlien vers l'API pour la ressource du commentaire.
+        author (str): Hyperlien vers l'auteur du commentaire.
+    """
     parent_issue = serializers.HyperlinkedRelatedField(view_name='api:issue-detail', read_only=True)
     uuid = serializers.HyperlinkedIdentityField(view_name="api:comment-detail", read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
@@ -15,6 +23,15 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['parent_issue', 'uuid', 'author', 'description', ]
 
     def validate(self, attrs):
+        """
+        Valide et met à jour les attributs du commentaire avec les informations de l'auteur.
+
+        Args:
+            attrs (dict): Dictionnaire contenant les attributs du commentaire.
+
+        Returns:
+            dict: Dictionnaire mis à jour avec les informations de l'auteur.
+        """
         request = self.context.get('request')
         if self.instance is None:
 
@@ -28,6 +45,15 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         return attrs
 
 def parse_url(url):
+    """
+    Analyse une URL pour extraire les identifiants des ressources.
+
+    Args:
+        url (str): URL à analyser.
+
+    Returns:
+        dict: Dictionnaire contenant les identifiants des ressources.
+    """
     parsed_url = dict()
     split_url = url.split('/')
     for url_idx, url_part in enumerate(split_url):

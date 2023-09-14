@@ -7,15 +7,40 @@ from django.db.models import CheckConstraint, Q
 
 
 class UserManager(BaseUserManager):
-    """Manager for user profiles"""
+    """
+    Manager pour les profils d'utilisateurs.
 
+    Méthodes:
+        create_user: Crée un utilisateur.
+        create_superuser: Crée un superutilisateur.
+    """
     def create_user(self, username, password, **kwargs):
+        """
+        Crée un nouvel utilisateur.
+
+        Args:
+            username (str): Nom d'utilisateur.
+            password (str): Mot de passe.
+
+        Returns:
+            User: Instance de l'utilisateur créé.
+        """
         user = self.model(username=username, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, username, password, **kwargs):
+        """
+        Crée un superutilisateur.
+
+        Args:
+            username (str): Nom d'utilisateur.
+            password (str): Mot de passe.
+
+        Returns:
+            User: Instance du superutilisateur créé.
+        """
         user = self.model(username=username, **kwargs)
         user.set_password(password)
         user.is_admin = True
@@ -26,6 +51,20 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Modèle représentant un utilisateur.
+
+    Attributs:
+        username (str): Nom d'utilisateur (unique).
+        birthday (datetime): Date de naissance.
+        date_joined (datetime): Date d'adhésion.
+        can_be_contacted (bool): Peut être contacté.
+        can_data_be_shared (bool): Les données peuvent être partagées.
+        is_admin (bool): Est un administrateur.
+        is_active (bool): Est actif.
+        is_staff (bool): Est membre du staff.
+        is_superuser (bool): Est un superutilisateur.
+    """
     username = models.CharField(max_length=255, unique=True)
     birthday = models.DateTimeField(
         blank=False, null=False
