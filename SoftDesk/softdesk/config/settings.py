@@ -70,11 +70,12 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'SoftDesk Support API',
+    'DESCRIPTION': 'API for SoftDesk Support application',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
+
+
 }
 
 MIDDLEWARE = [
