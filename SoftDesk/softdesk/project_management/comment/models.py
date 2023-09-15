@@ -22,7 +22,7 @@ class Comment(models.Model):
         last_update (datetime): La date et l'heure de la dernière mise à jour du commentaire.
     """
     author = models.ForeignKey(to=User,
-                               on_delete=models.CASCADE,
+                               on_delete=models.SET_NULL,
                                null=True,
                                blank=True)
     description = models.TextField(max_length=800)
@@ -32,7 +32,6 @@ class Comment(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     creation_date = models.DateTimeField(default=timezone.now)
-    last_update = models.DateTimeField(default=timezone.now)
 
     @property
     def contributors(self):

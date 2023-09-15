@@ -51,7 +51,6 @@ class Project(models.Model):
                                           blank=True)
 
     creation_date = models.DateTimeField(default=timezone.now)
-    last_update = models.DateTimeField(default=timezone.now)
 
     def add_contributors(self, *contributors):
         """
@@ -63,6 +62,7 @@ class Project(models.Model):
        Returns:
            None
        """
+
         for contributor in contributors:
             self.contributors.add(contributor)
         self.save()

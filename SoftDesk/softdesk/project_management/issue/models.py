@@ -50,8 +50,10 @@ class Issue(models.Model):
         FINISHED = 'FIN', lazy_text("Finished")
 
     author = models.ForeignKey(to=User,
-                               on_delete=models.CASCADE,
-                               related_name='issue_author'
+                               on_delete=models.SET_NULL,
+                               related_name='issue_author',
+                               null=True,
+
                                )
     description = models.TextField(max_length=800)
 

@@ -35,7 +35,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_superuser or user.is_admin:
             return project_models.Project.objects.all().order_by('creation_date')
-        return project_models.Project.objects.filter(contributors=user)
+        return project_models.Project.objects.filter(contributors=user).order_by('creation_date')
 
     def get_permissions(self):
         """
@@ -97,14 +97,14 @@ class IssueViewSet(viewsets.ModelViewSet):
         project_pk = self.kwargs.get('project_pk', False)
 
         if project_pk:
-            return issue_models.Issue.objects.filter(parent_project__pk=project_pk).order_by('last_update')
+            return issue_models.Issue.objects.filter(parent_project__pk=project_pk).order_by('-creation_date')
 
         if user.is_superuser or user.is_admin:
-            return issue_models.Issue.objects.all().order_by('creation_date')
+            return issue_models.Issue.objects.all().order_by('-creation_date')
 
         return issue_models.Issue.objects.filter(
             parent_project__contributors=user
-        ).order_by("parent_project_id", 'last_update')
+        ).order_by("parent_project_id", '-creation_date')
 
     def get_permissions(self):
         """
@@ -176,13 +176,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         issue_pk = self.kwargs.get('issue_pk', False)
 
         if issue_pk:
-            return comment_models.Comment.objects.filter(parent_issue__pk=issue_pk)
+            return comment_models.Comment.objects.filter(parent_issue__pk=issue_pk).order_by('-creation_date')
 
         if user.is_superuser or user.is_admin:
-            return comment_models.Comment.objects.all().order_by('creation_date')
+            return comment_models.Comment.objects.all().order_by('-creation_date')
 
         return comment_models.Comment.objects.filter(parent_issue__in=issue_models.Issue.objects.filter(
-            parent_project__contributors=user))
+            parent_project__contributors=user)).order_by('-creation_date')
 
     def get_permissions(self):
         """

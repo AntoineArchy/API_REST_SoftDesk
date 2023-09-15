@@ -1,9 +1,11 @@
 from rest_framework import permissions
 
+
 class IsContributor(permissions.BasePermission):
     """
     Classe de permission permettant de vérifier si l'utilisateur est un contributeur d'une ressource.
     """
+
     def has_object_permission(self, request, view, obj):
         """
         Vérifie si l'utilisateur est un contributeur de la ressource.
@@ -18,10 +20,12 @@ class IsContributor(permissions.BasePermission):
         """
         return request.user in obj.contributors.all()
 
+
 class IsAuthor(permissions.BasePermission):
     """
     Classe de permission permettant de vérifier si l'utilisateur est l'auteur d'une ressource ou un superutilisateur.
     """
+
     def has_object_permission(self, request, view, obj):
         """
         Vérifie si l'utilisateur est l'auteur de la ressource ou un superutilisateur.

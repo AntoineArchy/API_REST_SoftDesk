@@ -22,7 +22,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['url', 'name', 'description', 'type', 'author', 'contributors']
+        fields = [ 'name', 'description', 'type', 'author', 'contributors', 'url']
 
     def validate(self, attrs):
         """
@@ -36,8 +36,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         """
         request = self.context.get('request')
         user = request.user
-
-        attrs['author'] = user
-        attrs['contributors'] = [user]
-
+        if self.instance is None:
+            attrs['author'] = user
+            attrs['contributors'] = [user]
         return attrs

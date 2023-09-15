@@ -18,15 +18,16 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
         url (str): URL de l'API pour la ressource de l'issue.
         assignee (str): Hyperlien vers l'utilisateur assigné à l'issue.
     """
-    parent_project = serializers.HyperlinkedRelatedField(view_name='api:project-detail', read_only=True)
+    # parent_project = serializers.HyperlinkedRelatedField(view_name='api:project-detail', read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
-    url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail")
+    # url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail", read_only=True, lookup_field='parent_project')
     assignee = serializers.HyperlinkedRelatedField(view_name="api:user-detail", allow_null=True, read_only=True)
 
     class Meta:
         model = Issue
-        fields = ['url', 'author', 'description', 'name', 'parent_project',
-                  'priority', 'issue_type', 'statut', 'assignee']
+        # fields = [,  'name', 'parent_project',
+        #           ]
+        fields = ['name', 'description', 'priority', 'issue_type', 'statut', 'assignee', 'author', 'id']
 
     def validate(self, attrs):
         """
@@ -51,9 +52,9 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
             try:
                 assigned_user = User.objects.get(pk=request.data.get('assignee_id'))
             except ObjectDoesNotExist:
-                raise serializers.ValidationError('assignee id does not match a known user')
+                raise serializers.ValidationError('assignee id does not match any known user')
 
-            if assigned_user not in attrs['parent_project'].contributors.all():
+            if assigned_user not in attrs.get('parent_project', self.instance.parent_project).contributors.all():
                 raise serializers.ValidationError('Assignee id does not match any known contributor')
             attrs['assignee'] = assigned_user
         return attrs
