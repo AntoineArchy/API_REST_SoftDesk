@@ -73,9 +73,8 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'SoftDesk Support API',
     'DESCRIPTION': 'API for SoftDesk Support application',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-
-
+    # Pas utile à proprement parler, mais rend plus propre l'affichage swagger/docs.
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
 }
 
 MIDDLEWARE = [
