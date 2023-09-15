@@ -1,19 +1,15 @@
-from django.shortcuts import render
-
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-import project_management.permissions as pm_permissions
-
-import project_management.project.models as project_models
-import project_management.project.serializer as project_serializers
-
 import project_management.comment.models as comment_models
 import project_management.comment.serializer as comment_serializers
-
 import project_management.issue.models as issue_models
 import project_management.issue.serializer as issue_serializers
+import project_management.permissions as pm_permissions
+import project_management.project.models as project_models
+import project_management.project.serializer as project_serializers
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -74,6 +70,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
+@extend_schema(parameters=[OpenApiParameter("project_id", int, OpenApiParameter.PATH, required=False,
+                                            description='A unique integer value identifying the parent project.')]
+               )
 class IssueViewSet(viewsets.ModelViewSet):
     """
     VueSet pour le modèle Issue.
@@ -148,6 +147,11 @@ class IssueViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(parameters=[OpenApiParameter("project_id", int, OpenApiParameter.PATH,
+                                            description='A unique integer value identifying the parent project.',
+                                            required=False),
+                           OpenApiParameter("issue_id", int, OpenApiParameter.PATH,
+                                            description='A unique integer value identifying the parent issue.')])
 class CommentViewSet(viewsets.ModelViewSet):
     """
     VueSet pour le modèle Comment.
