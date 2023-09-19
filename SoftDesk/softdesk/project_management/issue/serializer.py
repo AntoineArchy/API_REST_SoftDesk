@@ -6,6 +6,7 @@ from rest_framework import serializers
 from user.models import User
 from .models import Issue
 from ..project.models import Project
+from ..utils import parse_url
 
 
 class IssuSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,15 +19,11 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
         url (str): URL de l'API pour la ressource de l'issue.
         assignee (str): Hyperlien vers l'utilisateur assigné à l'issue.
     """
-    # parent_project = serializers.HyperlinkedRelatedField(view_name='api:project-detail', read_only=True)
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
-    # url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail", read_only=True, lookup_field='parent_project')
     assignee = serializers.HyperlinkedRelatedField(view_name="api:user-detail", allow_null=True, read_only=True)
 
     class Meta:
         model = Issue
-        # fields = [,  'name', 'parent_project',
-        #           ]
         fields = ['name', 'description', 'priority', 'issue_type', 'statut', 'assignee', 'author', 'id']
 
     def validate(self, attrs):
@@ -58,22 +55,3 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
                 raise serializers.ValidationError('Assignee id does not match any known contributor')
             attrs['assignee'] = assigned_user
         return attrs
-
-
-def parse_url(url):
-    """
-    Analyse une URL pour extraire les identifiants des ressources.
-
-    Args:
-        url (str): URL à analyser.
-
-    Returns:
-        dict: Dictionnaire contenant les identifiants des ressources.
-    """
-    parsed_url = dict()
-    split_url = url.split('/')
-    for url_idx, url_part in enumerate(split_url):
-        if not url_part.isdigit():
-            continue
-        parsed_url[f"{split_url[url_idx - 1]}_id"] = url_part
-    return parsed_url
