@@ -76,7 +76,9 @@ class Issue(models.Model):
     statut = models.CharField(
         max_length=3,
         choices=IssueStatut.choices,
-        default=IssueStatut.TO_DO
+        default=IssueStatut.TO_DO,
+        blank=True,
+        null=True
     )
 
     assignee = models.ForeignKey(to=User,

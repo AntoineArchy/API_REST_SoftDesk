@@ -21,10 +21,11 @@ class IssuSerializer(serializers.HyperlinkedModelSerializer):
     """
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
     assignee = serializers.HyperlinkedRelatedField(view_name="api:user-detail", allow_null=True, read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="api:issue-detail", read_only=True)
 
     class Meta:
         model = Issue
-        fields = ['name', 'description', 'priority', 'issue_type', 'statut', 'assignee', 'author', 'id']
+        fields = ['name', 'description', 'priority', 'issue_type', 'statut', 'assignee', 'author', 'id', 'url']
 
     def validate(self, attrs):
         """

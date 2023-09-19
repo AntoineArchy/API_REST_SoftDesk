@@ -10,6 +10,7 @@ app_name = 'api'
 
 project_router = routers.DefaultRouter()
 project_router.register('project', ProjectViewSet, basename='project')
+project_router.register('issue', IssueViewSet, basename='issue')
 project_router.register(r'user', viewset=UserViewSet, basename='user')
 
 
