@@ -1,4 +1,3 @@
-from django.urls import reverse
 from rest_framework import serializers
 
 from user.models import User
@@ -16,13 +15,11 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     """
     url = serializers.HyperlinkedIdentityField(view_name="api:project-detail")
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
-    contributors = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True, many=True)
-
-    # issue = serializers.SerializerMethodField()
-
+    contributors = serializers.HyperlinkedRelatedField(view_name="api:user-detail", many=True,
+                                                       queryset=User.objects.all())
     class Meta:
         model = Project
-        fields = [ 'name', 'description', 'type', 'author', 'contributors', 'url']
+        fields = ['name', 'description', 'type', 'author', 'contributors', 'url']
 
     def validate(self, attrs):
         """
@@ -38,5 +35,5 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         user = request.user
         if self.instance is None:
             attrs['author'] = user
-            attrs['contributors'] = [user]
+            attrs['contributors'] = [user, *attrs['contributors']]
         return attrs
