@@ -17,8 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="api:user-detail")
     class Meta:
         model = User
-        fields = ('url', 'username', 'password', 'birthday', 'can_be_contacted', 'can_data_be_shared')
+        fields = ('url', 'username', 'password', 'birthday', 'can_be_contacted', 'can_data_be_shared', 'is_active')
         extra_kwargs = {'password': {'write_only': True}}
+        read_only_fields = ('is_active',)
 
     def validate(self, attrs):
         """
@@ -32,8 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
         """
         birthday = attrs.get('birthday', datetime.datetime.now())
 
-        if birthday.date() + MIN_USER_AGE > datetime.datetime.now().date():
-            raise serializers.ValidationError({"birthday": f"birthday fields is invalid."})
+        if (birthday + MIN_USER_AGE) > datetime.datetime.now().date():
+            raise serializers.ValidationError({"birthday": f"Sorry, you must be at least 15 to register."})
         return attrs
 
     def create(self, validated_data):
