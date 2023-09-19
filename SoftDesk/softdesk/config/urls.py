@@ -16,12 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from project_management import urls as project_management_urls
-from user.api import api_urls as user_api_url
 
-# softdesk_api_routers = routers.DefaultRouter()
+from project_management import urls as project_management_urls
+
 
 urlpatterns = [
     path('', include(project_management_urls)),
