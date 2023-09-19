@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import Comment
 from ..issue.models import Issue
+from ..utils import parse_url
 
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
@@ -14,13 +15,14 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         uuid (str): Hyperlien vers l'API pour la ressource du commentaire.
         author (str): Hyperlien vers l'auteur du commentaire.
     """
-    # parent_issue = serializers.HyperlinkedRelatedField(view_name='api:issue-detail', read_only=True)
-    # uuid = serializers.HyperlinkedIdentityField(view_name="api:comment-detail", read_only=True)
+
     author = serializers.HyperlinkedRelatedField(view_name="api:user-detail", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['description', 'author', 'creation_date','uuid']
+        fields = ['description', 'author', 'creation_date', 'uuid']
+        read_only_fields = ['creation_date', 'author', 'uuid']
+
 
     def validate(self, attrs):
         """
@@ -34,7 +36,6 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         """
         request = self.context.get('request')
         if self.instance is None:
-
             parsed_url = parse_url(request.get_full_path())
             issue_id = request.data.get('issue_id', parsed_url.get('issue_id', False))
             if not issue_id:
@@ -43,21 +44,3 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
             attrs['author'] = request.user
 
         return attrs
-
-def parse_url(url):
-    """
-    Analyse une URL pour extraire les identifiants des ressources.
-
-    Args:
-        url (str): URL à analyser.
-
-    Returns:
-        dict: Dictionnaire contenant les identifiants des ressources.
-    """
-    parsed_url = dict()
-    split_url = url.split('/')
-    for url_idx, url_part in enumerate(split_url):
-        if not url_part.isdigit():
-            continue
-        parsed_url[f"{split_url[url_idx - 1]}_id"] = url_part
-    return parsed_url
