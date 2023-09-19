@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
+from project_management.issue.models import Issue
 from project_management.project.models import Project
 from user.models import User
 from user.serializers import UserSerializer
@@ -32,8 +33,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
         user.is_active = False
+        user.username = "Deactivated User"
         user.save()
         contribution_to_remove = Project.objects.filter(contributors=user)
         for project in contribution_to_remove:
             project.contributors.remove(user)
+
+        assignation_to_remove = Issue.objects.filter(assignee=user)
+        for issue in assignation_to_remove:
+            issue.assignee = None
         return Response(data='User has been deactivated.')
