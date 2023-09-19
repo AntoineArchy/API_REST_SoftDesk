@@ -19,7 +19,6 @@ class Project(models.Model):
         type (str): Le type du projet, choisi parmi les options prédéfinies.
         contributors (list of User): Les utilisateurs qui contribuent au projet.
         creation_date (datetime): La date et l'heure de création du projet.
-        last_update (datetime): La date et l'heure de la dernière mise à jour du projet.
         """
 
     class ProjectType(models.TextChoices):
