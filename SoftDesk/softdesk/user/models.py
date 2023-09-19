@@ -14,6 +14,7 @@ class UserManager(BaseUserManager):
         create_user: Crée un utilisateur.
         create_superuser: Crée un superutilisateur.
     """
+
     def create_user(self, username, password, **kwargs):
         """
         Crée un nouvel utilisateur.
@@ -66,11 +67,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         is_superuser (bool): Est un superutilisateur.
     """
     username = models.CharField(max_length=255, unique=True)
-    birthday = models.DateTimeField(
-        blank=False, null=False
-    )
+    birthday = models.fields.DateField(
+                                       blank=False, null=False
+                                       )
 
-    date_joined = models.DateTimeField(
+    date_joined = models.DateField(
         blank=False, null=False, default=datetime(1970, 1, 1)
     )
 
@@ -87,17 +88,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['birthday']
 
-    class Meta:
-        constraints = [
-            # Ensures constraint on DB level, raises IntegrityError
-            CheckConstraint(
-                check=
-                Q(birthday__lte=(
-                        datetime.today() - timedelta(days=365 * 15)
-                )),
-                name='check_birthday',
-            ),
-        ]
-
     def __str__(self):
-        return self.username
+        return f"{self.username}{' (inactif)' if not self.is_active else ''}"
