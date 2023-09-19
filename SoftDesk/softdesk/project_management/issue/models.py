@@ -86,7 +86,6 @@ class Issue(models.Model):
                                  blank=True)
 
     creation_date = models.DateTimeField(default=timezone.now)
-    last_update = models.DateTimeField(default=timezone.now)
 
     @property
     def contributors(self):
