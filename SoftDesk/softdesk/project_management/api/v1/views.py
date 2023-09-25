@@ -103,7 +103,7 @@ class IssueViewSet(viewsets.ModelViewSet):
             return issue_models.Issue.objects.all().order_by('-creation_date')
 
         return issue_models.Issue.objects.filter(
-            parent_project__contributors=user
+            parent_project__assignee=user
         ).order_by("parent_project_id", '-creation_date')
 
     def get_permissions(self):
