@@ -19,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes (list of classes): Classes de permission pour restreindre l'accès à la vue.
     """
 
-    queryset = User.objects.all().order_by('date_joined')
+    queryset = User.objects.all().order_by('date_joined', '-is_active')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
