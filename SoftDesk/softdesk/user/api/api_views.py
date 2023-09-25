@@ -33,7 +33,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
         user.is_active = False
-        user.username = "Deactivated User"
+        user.username = f"Deactivated User ({user.pk})"
         user.save()
         contribution_to_remove = Project.objects.filter(contributors=user)
         for project in contribution_to_remove:
@@ -41,5 +41,5 @@ class UserViewSet(viewsets.ModelViewSet):
 
         assignation_to_remove = Issue.objects.filter(assignee=user)
         for issue in assignation_to_remove:
-            issue.assignee = None
+            issue.set_assignation(None)
         return Response(data='User has been deactivated.')
